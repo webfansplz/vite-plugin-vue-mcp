@@ -17,7 +17,12 @@ export function createServerRpc(ctx: ViteMcpContext): RpcFunctions {
     onRouterInfoUpdated: (event: string, data: string) => {
       ctx.hooks.callHook(event, data)
     },
-    // pinia info
+    // pinia tree
+    getPiniaTree: (_: { event: string }) => ({}),
+    onPiniaTreeUpdated: (event: string, data: string) => {
+      ctx.hooks.callHook(event, data)
+    },
+    // pinia state
     getPiniaState: (_: { event: string, storeName: string }) => ({}),
     onPiniaInfoUpdated: (event: string, data: string) => {
       ctx.hooks.callHook(event, data)

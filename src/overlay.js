@@ -4,6 +4,8 @@ import { createRPCClient } from 'vite-dev-rpc'
 import { createHotContext } from 'vite-hot-client'
 
 const hot = createHotContext()
+const PINIA_INSPECTOR_ID = 'pinia'
+const COMPONENTS_INSPECTOR_ID = 'components'
 
 devtools.init()
 
@@ -31,7 +33,7 @@ const rpc = createRPCClient(
     // get component tree
     async getInspectorTree(query) {
       const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: 'components',
+        inspectorId: COMPONENTS_INSPECTOR_ID,
         filter: '',
       })
       rpc.onInspectorTreeUpdated(query.event, inspectorTree[0])
@@ -39,13 +41,13 @@ const rpc = createRPCClient(
     // get component state
     async getInspectorState(query) {
       const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: 'components',
+        inspectorId: COMPONENTS_INSPECTOR_ID,
         filter: '',
       })
       const flattenedChildren = flattenChildren(inspectorTree[0])
       const targetNode = flattenedChildren.find(child => child.name === query.componentName)
       const inspectorState = await devtools.api.getInspectorState({
-        inspectorId: 'components',
+        inspectorId: COMPONENTS_INSPECTOR_ID,
         nodeId: targetNode.id,
       })
       rpc.onInspectorStateUpdated(query.event, stringify(inspectorState))
@@ -54,15 +56,29 @@ const rpc = createRPCClient(
     async getRouterInfo(query) {
       rpc.onRouterInfoUpdated(query.event, JSON.stringify(devtoolsRouterInfo, null, 2))
     },
-    // get pinia info
+    // get pinia tree
+    async getPiniaTree(query) {
+      const highPerfModeEnabled = devtoolsState.highPerfModeEnabled
+      if (highPerfModeEnabled) {
+        toggleHighPerfMode(false)
+      }
+      const inspectorTree = await devtools.api.getInspectorTree({
+        inspectorId: PINIA_INSPECTOR_ID,
+        filter: '',
+      })
+      if (highPerfModeEnabled) {
+        toggleHighPerfMode(true)
+      }
+      rpc.onPiniaTreeUpdated(query.event, inspectorTree[0])
+    },
+    // get pinia state
     async getPiniaState(query) {
       const highPerfModeEnabled = devtoolsState.highPerfModeEnabled
-      const INSPECTOR_ID = 'pinia'
       if (highPerfModeEnabled) {
         toggleHighPerfMode(false)
       }
       const payload = {
-        inspectorId: INSPECTOR_ID,
+        inspectorId: PINIA_INSPECTOR_ID,
         nodeId: query.storeName,
       }
       const inspector = getInspector(payload.inspectorId)

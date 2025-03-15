@@ -6,14 +6,19 @@ import type { Hookable } from 'hookable'
 import type { ViteDevServer } from 'vite'
 
 export interface RpcFunctions {
+  // components
   getInspectorTree: (options: { event: string, componentName?: string }) => void
   onInspectorTreeUpdated: (event: string, data: string) => void
   getInspectorState: (options: { event: string, componentName: string }) => void
   onInspectorStateUpdated: (event: string, data: string) => void
+  // router
   getRouterInfo: (options: { event: string }) => void
   onRouterInfoUpdated: (event: string, data: string) => void
+  // pinia
   getPiniaState: (options: { event: string, storeName: string }) => void
   onPiniaInfoUpdated: (event: string, data: string) => void
+  getPiniaTree: (options: { event: string }) => void
+  onPiniaTreeUpdated: (event: string, data: string) => void
 }
 export interface ViteMcpContext {
   hooks: Hookable

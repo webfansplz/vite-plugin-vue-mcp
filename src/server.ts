@@ -104,5 +104,26 @@ export function createMcpServerDefault(
     },
   )
 
+  server.tool(
+    'get-pinia-tree',
+    'Get the Pinia tree. Always returns the JSON structure format.',
+    {
+    },
+    async () => {
+      return new Promise((resolve) => {
+        const eventName = nanoid()
+        ctx.hooks.hookOnce(eventName, (res) => {
+          resolve({
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res),
+            }],
+          })
+        })
+        ctx.rpcServer.getPiniaTree({ event: eventName })
+      })
+    },
+  )
+
   return server
 }
