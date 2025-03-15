@@ -20,7 +20,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-component-tree',
-    'Get the Vue component tree. Always returns the markdown tree syntax format.',
+    'Get the Vue component tree in markdown tree syntax format.',
     {
     },
     async () => {
@@ -41,7 +41,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-component-state',
-    'Get the Vue component state. Always returns the JSON structure format.',
+    'Get the Vue component state in JSON structure format.',
     {
       componentName: z.string(),
     },
@@ -63,7 +63,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-router-info',
-    'Get the Vue router info. Always returns the JSON structure format.',
+    'Get the Vue router info in JSON structure format.',
     {
     },
     async () => {
@@ -84,7 +84,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-pinia-state',
-    'Get the Pinia state. Always returns the JSON structure format.',
+    'Get the Pinia state in JSON structure format.',
     {
       storeName: z.string(),
     },
@@ -106,7 +106,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-pinia-tree',
-    'Get the Pinia tree. Always returns the JSON structure format.',
+    'Get the Pinia tree in JSON structure format.',
     {
     },
     async () => {
