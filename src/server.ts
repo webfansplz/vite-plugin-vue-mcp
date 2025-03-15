@@ -61,5 +61,48 @@ export function createMcpServerDefault(
     },
   )
 
+  server.tool(
+    'get-router-info',
+    'Get the Vue router info. Always returns the JSON structure format.',
+    {
+    },
+    async () => {
+      return new Promise((resolve) => {
+        const eventName = nanoid()
+        ctx.hooks.hookOnce(eventName, (res) => {
+          resolve({
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res),
+            }],
+          })
+        })
+        ctx.rpcServer.getRouterInfo({ event: eventName })
+      })
+    },
+  )
+
+  server.tool(
+    'get-pinia-state',
+    'Get the Pinia state. Always returns the JSON structure format.',
+    {
+      storeName: z.string(),
+    },
+    async ({ storeName }) => {
+      return new Promise((resolve) => {
+        const eventName = nanoid()
+        ctx.hooks.hookOnce(eventName, (res) => {
+          resolve({
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res),
+            }],
+          })
+        })
+        ctx.rpcServer.getPiniaState({ event: eventName, storeName })
+      })
+    },
+  )
+
   return server
 }

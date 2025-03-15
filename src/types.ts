@@ -1,7 +1,7 @@
 import type { Awaitable } from '@antfu/utils'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { Implementation as McpServerInfo } from '@modelcontextprotocol/sdk/types.js'
-import type { BirpcGroupReturn, BirpcReturn } from 'birpc'
+import type { BirpcGroupReturn } from 'birpc'
 import type { Hookable } from 'hookable'
 import type { ViteDevServer } from 'vite'
 
@@ -10,6 +10,10 @@ export interface RpcFunctions {
   onInspectorTreeUpdated: (event: string, data: string) => void
   getInspectorState: (options: { event: string, componentName: string }) => void
   onInspectorStateUpdated: (event: string, data: string) => void
+  getRouterInfo: (options: { event: string }) => void
+  onRouterInfoUpdated: (event: string, data: string) => void
+  getPiniaState: (options: { event: string, storeName: string }) => void
+  onPiniaInfoUpdated: (event: string, data: string) => void
 }
 export interface ViteMcpContext {
   hooks: Hookable
