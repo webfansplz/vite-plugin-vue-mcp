@@ -69,7 +69,7 @@ const rpc = createRPCClient(
       if (highPerfModeEnabled) {
         toggleHighPerfMode(true)
       }
-      rpc.onPiniaTreeUpdated(query.event, inspectorTree[0])
+      rpc.onPiniaTreeUpdated(query.event, inspectorTree)
     },
     // get pinia state
     async getPiniaState(query) {
