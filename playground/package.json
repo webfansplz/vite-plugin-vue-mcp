@@ -1,0 +1,15 @@
+{
+  "name": "playground",
+  "type": "module",
+  "private": true,
+  "author": "Arlo <webfansplz@gmail.com>",
+  "scripts": {
+    "dev": "DEBUG=vite:mcp:server vite"
+  },
+  "dependencies": {
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:"
+  }
+}

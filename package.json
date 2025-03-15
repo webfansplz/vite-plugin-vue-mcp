@@ -1,0 +1,73 @@
+{
+  "name": "vite-plugin-vue-mcp",
+  "type": "module",
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.6.2",
+  "description": "MCP server helping models to understand your Vue app better.",
+  "author": "Arlo <webfansplz@gmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/webfansplz",
+  "homepage": "https://github.com/webfansplz/vite-plugin-vue-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webfansplz/vite-plugin-vue-mcp.git"
+  },
+  "bugs": "https://github.com/webfansplz/vite-plugin-vue-mcp/issues",
+  "keywords": [
+    "vite-plugin",
+    "vue",
+    "mcp",
+    "modelcontextprotocol"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "unbuild --stub",
+    "play": "nr -C playground dev",
+    "prepublishOnly": "nr build",
+    "lint": "eslint",
+    "release": "bumpp && pnpm publish"
+  },
+  "peerDependencies": {
+    "vite": ">=6.0.0"
+  },
+  "dependencies": {
+    "@antfu/utils": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@vue/devtools-core": "catalog:",
+    "@vue/devtools-kit": "catalog:",
+    "ansis": "catalog:",
+    "birpc": "^2.2.0",
+    "debug": "catalog:",
+    "hookable": "^5.5.3",
+    "nanoid": "^5.1.3",
+    "pathe": "catalog:",
+    "vite-dev-rpc": "^1.0.7",
+    "vite-hot-client": "^2.0.4",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "@antfu/ni": "catalog:",
+    "@modelcontextprotocol/inspector": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@types/debug": "catalog:",
+    "@types/node": "catalog:",
+    "bumpp": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "unbuild": "catalog:",
+    "vite": "catalog:",
+    "zod": "catalog:"
+  }
+}
