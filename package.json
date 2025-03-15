@@ -35,7 +35,7 @@
     "play": "nr -C playground dev",
     "prepublishOnly": "nr build",
     "lint": "eslint",
-    "release": "bumpp && pnpm publish"
+    "release": "bumpp && pnpm publish --no-git-checks"
   },
   "peerDependencies": {
     "vite": ">=6.0.0"
