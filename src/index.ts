@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
-import type { RpcFunctions, ViteMcpContext, ViteVueMcpOptions } from './types'
+import type { RpcFunctions, ViteMcpContext, VueMcpOptions } from './types'
 import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -18,7 +18,7 @@ function getVueMcpPath(): string {
 }
 const vueMcpResourceSymbol = '?__vue-mcp-resource'
 
-export function ViteVueMcp(options: ViteVueMcpOptions = {}): Plugin {
+export function VueMcp(options: VueMcpOptions = {}): Plugin {
   const {
     mcpPath = '/__mcp',
     updateCursorMcpJson = true,

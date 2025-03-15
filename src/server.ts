@@ -1,12 +1,12 @@
 import type { ViteDevServer } from 'vite'
-import type { ViteMcpContext, ViteVueMcpOptions } from './types'
+import type { ViteMcpContext, VueMcpOptions } from './types'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
 import { version } from '../package.json'
 
 export function createMcpServerDefault(
-  options: ViteVueMcpOptions,
+  options: VueMcpOptions,
   vite: ViteDevServer,
   ctx: ViteMcpContext,
 ): McpServer {

@@ -1,6 +1,6 @@
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import { ViteVueMcp } from '../src'
+import { VueMcp } from '../src'
 
 export default defineConfig({
   server: {
@@ -8,6 +8,6 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    ViteVueMcp(),
+    VueMcp(),
   ],
 })

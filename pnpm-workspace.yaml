@@ -25,5 +25,31 @@ catalog:
   vite: ^6.2.1
   vite-dev-rpc: ^1.0.7
   vite-hot-client: ^2.0.4
+  vite-plugin-vue-mcp: ^0.0.0
   vue: ^3.4.37
   zod: ^3.24.2
+catalogs:
+  conflicts_vite-plugin-vue-mcp_catalog:
+    vite-plugin-vue-mcp: catalog
+  conflicts_vite-plugin-vue-mcp_catalo:
+    vite-plugin-vue-mcp: catalo
+  conflicts_vite-plugin-vue-mcp_catal:
+    vite-plugin-vue-mcp: catal
+  conflicts_vite-plugin-vue-mcp_cata:
+    vite-plugin-vue-mcp: cata
+  conflicts_vite-plugin-vue-mcp_cat:
+    vite-plugin-vue-mcp: cat
+  conflicts_vite-plugin-vue-mcp_ca:
+    vite-plugin-vue-mcp: ca
+  conflicts_vite-plugin-vue-mcp_c:
+    vite-plugin-vue-mcp: c
+  conflicts_vite-plugin-vue-mcp_:
+    vite-plugin-vue-mcp: ''
+  conflicts_vite-plugin-vue-mcp_w:
+    vite-plugin-vue-mcp: w
+  conflicts_vite-plugin-vue-mcp_wo:
+    vite-plugin-vue-mcp: wo
+  conflicts_vite-plugin-vue-mcp_wor:
+    vite-plugin-vue-mcp: wor
+  conflicts_vite-plugin-vue-mcp_work:
+    vite-plugin-vue-mcp: work

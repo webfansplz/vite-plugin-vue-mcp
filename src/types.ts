@@ -14,7 +14,7 @@ export interface ViteMcpContext {
   rpc: RpcFunctions
   rpcServer: BirpcGroupReturn<RpcFunctions>
 }
-export interface ViteVueMcpOptions {
+export interface VueMcpOptions {
   /**
    * The host to listen on, default is `localhost`
    */
