@@ -41,6 +41,10 @@ export default defineConfig({
 
 ![pinia-state](./screenshots/pinia-state.gif)
 
-## Notice 📝
+## Notice 💡
+
+**Please ensure the application is open in your browser when using this plugin.**
 
 ## Credits 💖
+
+This project is inspired by [vite-plugin-mcp](https://github.com/antfu/nuxt-mcp/tree/main/packages/vite-plugin-mcp). Thanks to [@antfu](https://github.com/antfu) for the great work.
