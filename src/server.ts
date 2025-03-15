@@ -20,7 +20,7 @@ export function createMcpServerDefault(
 
   server.tool(
     'get-component-tree',
-    'Get the Vue component tree.',
+    'Get the Vue component tree. Always returns the markdown tree syntax format.',
     {
     },
     async () => {
@@ -35,6 +35,28 @@ export function createMcpServerDefault(
           })
         })
         ctx.rpcServer.getInspectorTree({ event: eventName })
+      })
+    },
+  )
+
+  server.tool(
+    'get-component-state',
+    'Get the Vue component state. Always returns the JSON structure format.',
+    {
+      componentName: z.string(),
+    },
+    async ({ componentName }) => {
+      return new Promise((resolve) => {
+        const eventName = nanoid()
+        ctx.hooks.hookOnce(eventName, (res) => {
+          resolve({
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res),
+            }],
+          })
+        })
+        ctx.rpcServer.getInspectorState({ event: eventName, componentName })
       })
     },
   )

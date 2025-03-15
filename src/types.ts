@@ -8,6 +8,8 @@ import type { ViteDevServer } from 'vite'
 export interface RpcFunctions {
   getInspectorTree: (options: { event: string, componentName?: string }) => void
   onInspectorTreeUpdated: (event: string, data: string) => void
+  getInspectorState: (options: { event: string, componentName: string }) => void
+  onInspectorStateUpdated: (event: string, data: string) => void
 }
 export interface ViteMcpContext {
   hooks: Hookable
