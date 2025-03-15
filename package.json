@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-vue-mcp",
   "type": "module",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "packageManager": "pnpm@10.6.2",
   "description": "MCP server helping models to understand your Vue app better.",
   "author": "Arlo <webfansplz@gmail.com>",
