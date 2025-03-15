@@ -20,7 +20,7 @@ export interface RpcFunctions {
   getPiniaTree: (options: { event: string }) => void
   onPiniaTreeUpdated: (event: string, data: string) => void
 }
-export interface ViteMcpContext {
+export interface VueMcpContext {
   hooks: Hookable
   rpc: RpcFunctions
   rpcServer: BirpcGroupReturn<RpcFunctions>
@@ -73,7 +73,7 @@ export interface VueMcpOptions {
   updateCursorMcpJson?: boolean | {
     enabled: boolean
     /**
-     * The name of the MCP server, default is `vite`
+     * The name of the MCP server, default is `vue-mcp`
      */
     serverName?: string
   }

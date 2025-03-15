@@ -1,6 +1,6 @@
-import type { RpcFunctions, ViteMcpContext } from './types'
+import type { RpcFunctions, VueMcpContext } from './types'
 
-export function createServerRpc(ctx: ViteMcpContext): RpcFunctions {
+export function createServerRpc(ctx: VueMcpContext): RpcFunctions {
   return {
     // component tree
     getInspectorTree: (_: { event: string, componentName?: string }) => ({}),

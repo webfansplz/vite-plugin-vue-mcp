@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
-import type { RpcFunctions, ViteMcpContext, VueMcpOptions } from './types'
+import type { RpcFunctions, VueMcpContext, VueMcpOptions } from './types'
 import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -9,7 +9,7 @@ import { join } from 'pathe'
 import { normalizePath, searchForWorkspaceRoot } from 'vite'
 import { createRPCServer } from 'vite-dev-rpc'
 import { setupRoutes } from './connect'
-import { createViteMcpContext } from './context'
+import { createVueMcpContext } from './context'
 import { createServerRpc } from './rpc'
 
 function getVueMcpPath(): string {
@@ -23,7 +23,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     mcpPath = '/__mcp',
     updateCursorMcpJson = true,
     printUrl = true,
-    mcpServer = (vite: ViteDevServer, ctx: ViteMcpContext) => import('./server').then(m => m.createMcpServerDefault(options, vite, ctx)),
+    mcpServer = (vite: ViteDevServer, ctx: VueMcpContext) => import('./server').then(m => m.createMcpServerDefault(options, vite, ctx)),
   } = options
 
   const cursorMcpOptions = typeof updateCursorMcpJson == 'boolean'
@@ -35,7 +35,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
   const vueMcpOptionsImportee = 'virtual:vue-mcp-options'
   const resolvedVueMcpOptions = `\0${vueMcpOptionsImportee}`
 
-  const ctx = createViteMcpContext()
+  const ctx = createVueMcpContext()
 
   return {
     name: 'vite-plugin-mcp',

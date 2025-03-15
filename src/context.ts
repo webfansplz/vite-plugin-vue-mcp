@@ -1,7 +1,7 @@
-import type { ViteMcpContext } from './types'
+import type { VueMcpContext } from './types'
 import { createHooks } from 'hookable'
 
-export function createViteMcpContext(): ViteMcpContext {
+export function createVueMcpContext(): VueMcpContext {
   return {
     hooks: createHooks(),
     rpc: null!,
