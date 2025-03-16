@@ -9,7 +9,9 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    VueMcp(),
+    VueMcp({
+      appendTo: 'src/main.ts',
+    }),
     DevTools(),
   ],
 })

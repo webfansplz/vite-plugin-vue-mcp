@@ -77,4 +77,13 @@ export interface VueMcpOptions {
      */
     serverName?: string
   }
+
+  /**
+   * append an import to the module id ending with `appendTo` instead of adding a script into body
+   * useful for projects that do not use html file as an entry
+   *
+   * WARNING: only set this if you know exactly what it does.
+   * @default ''
+   */
+  appendTo?: string | RegExp
 }

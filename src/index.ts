@@ -94,7 +94,26 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     configResolved(resolvedConfig) {
       config = resolvedConfig
     },
+    transform(code, id, _options) {
+      if (_options?.ssr)
+        return
+
+      const appendTo = options.appendTo
+      const [filename] = id.split('?', 2)
+
+      if (appendTo
+        && (
+          (typeof appendTo === 'string' && filename.endsWith(appendTo))
+          || (appendTo instanceof RegExp && appendTo.test(filename)))) {
+        code = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
+      }
+
+      return code
+    },
     transformIndexHtml(html) {
+      if (options.appendTo)
+        return
+
       return {
         html,
         tags: [
