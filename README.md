@@ -127,6 +127,10 @@ export interface VueMcpOptions {
 
 ![pinia-state](./screenshots/pinia-state.gif)
 
+## Architecture ⚡️
+
+![architecture](./screenshots/architecture.png)
+
 ## Notice 💡
 
 **Please ensure the application is running in your browser before using the features.**
