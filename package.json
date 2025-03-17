@@ -21,9 +21,14 @@
   ],
   "sideEffects": false,
   "exports": {
-    ".": "./dist/index.mjs"
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./*": "./*"
   },
-  "main": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
