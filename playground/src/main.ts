@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 
 const routes = [
-  { path: '/', component: () => import('./pages/Home.vue') },
+  { path: '/', component: () => import('./pages/Index.vue') },
   { path: '/about', component: () => import('./pages/About.vue') },
   { path: '/services', component: () => import('./pages/Services.vue') },
   { path: '/contact', component: () => import('./pages/Contact.vue') },
