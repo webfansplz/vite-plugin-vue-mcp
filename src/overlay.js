@@ -55,6 +55,29 @@ const rpc = createRPCClient(
       rpc.onInspectorStateUpdated(query.event, stringify(inspectorState))
     },
 
+    // edit component state
+    async editComponentState(query) {
+      const inspectorTree = await devtools.api.getInspectorTree({
+        inspectorId: COMPONENTS_INSPECTOR_ID,
+        filter: '',
+      })
+      const flattenedChildren = flattenChildren(inspectorTree[0])
+      const targetNode = flattenedChildren.find(child => child.name === query.componentName)
+      const payload = {
+        inspectorId: COMPONENTS_INSPECTOR_ID,
+        nodeId: targetNode.id,
+        path: query.path,
+        state: {
+          new: null,
+          remove: false,
+          type: query.valueType,
+          value: query.value,
+        },
+        type: undefined,
+      }
+      await devtools.ctx.api.editInspectorState(payload)
+    },
+
     // highlight component
     async highlightComponent(query) {
       clearTimeout(highlightComponentTimeout)

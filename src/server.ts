@@ -62,14 +62,42 @@ export function createMcpServerDefault(
   )
 
   server.tool(
+    'edit-component-state',
+    'Edit the Vue component state.',
+    {
+      componentName: z.string(),
+      path: z.array(z.string()),
+      value: z.string(),
+      valueType: z.enum(['string', 'number', 'boolean', 'object', 'array']),
+    },
+    async ({ componentName, path, value, valueType }) => {
+      return new Promise((resolve) => {
+        ctx.rpcServer.editComponentState({ componentName, path, value, valueType })
+        resolve({
+          content: [{
+            type: 'text',
+            text: 'ok',
+          }],
+        })
+      })
+    },
+  )
+
+  server.tool(
     'highlight-component',
     'Highlight the Vue component.',
     {
       componentName: z.string(),
     },
     async ({ componentName }) => {
-      return new Promise(() => {
+      return new Promise((resolve) => {
         ctx.rpcServer.highlightComponent({ componentName })
+        resolve({
+          content: [{
+            type: 'text',
+            text: 'ok',
+          }],
+        })
       })
     },
   )

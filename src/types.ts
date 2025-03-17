@@ -11,6 +11,7 @@ export interface RpcFunctions {
   onInspectorTreeUpdated: (event: string, data: string) => void
   getInspectorState: (options: { event: string, componentName: string }) => void
   onInspectorStateUpdated: (event: string, data: string) => void
+  editComponentState: (options: { componentName: string, path: string[], value: string, valueType: string }) => void
   highlightComponent: (options: { componentName: string }) => void
   // router
   getRouterInfo: (options: { event: string }) => void
