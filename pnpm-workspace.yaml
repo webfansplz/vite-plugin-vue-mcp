@@ -19,12 +19,14 @@ catalog:
   hookable: ^5.5.3
   nanoid: ^5.1.3
   pathe: ^2.0.3
+  pinia: ^3.0.1
   tsx: ^4.19.3
   typescript: ~5.8.2
   unbuild: ^3.5.0
   vite: ^6.2.1
   vite-dev-rpc: ^1.0.7
   vite-hot-client: ^2.0.4
+  vite-plugin-vue-devtools: ^7.7.2
   vite-plugin-vue-mcp: ^0.0.0
   vue: ^3.4.37
   vue-router: ^4.5.0
