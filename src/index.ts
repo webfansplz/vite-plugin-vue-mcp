@@ -59,7 +59,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       mcp = await options.mcpServerSetup?.(mcp, vite) || mcp
       await setupRoutes(mcpPath, mcp, vite)
 
-      const port = vite.config.server.port
+      const port = vite.config.server.port || 5173
       const root = searchForWorkspaceRoot(vite.config.root)
 
       const sseUrl = `http://${options.host || 'localhost'}:${options.port || port}${mcpPath}/sse`
