@@ -10,6 +10,7 @@ export default defineBuildConfig({
     emitCJS: true,
     inlineDependencies: [
       '@antfu/utils',
+      'nanoid',
     ],
   },
 })
