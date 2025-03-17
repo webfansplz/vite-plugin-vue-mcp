@@ -109,6 +109,18 @@ export interface VueMcpOptions {
 
 ![component-state](./screenshots/component-state.gif)
 
+### Edit Component State
+
+`edit-component-state`: Edit the state of a component (input: `componentName`, `path`, `value`, `valueType`).
+
+![edit-component-state](./screenshots/edit-component-state.gif)
+
+### Highlight Component
+
+`highlight-component`: Highlight a component (input: `componentName`).
+
+![highlight-component](./screenshots/highlight-component.gif)
+
 ### Get Routes
 
 `get-router-info`: Get the Vue router info of the application.
