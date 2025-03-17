@@ -9,6 +9,8 @@ const COMPONENTS_INSPECTOR_ID = 'components'
 
 devtools.init()
 
+let highlightComponentTimeout = null
+
 function flattenChildren(node) {
   const result = []
 
@@ -51,6 +53,21 @@ const rpc = createRPCClient(
         nodeId: targetNode.id,
       })
       rpc.onInspectorStateUpdated(query.event, stringify(inspectorState))
+    },
+
+    // highlight component
+    async highlightComponent(query) {
+      clearTimeout(highlightComponentTimeout)
+      const inspectorTree = await devtools.api.getInspectorTree({
+        inspectorId: COMPONENTS_INSPECTOR_ID,
+        filter: '',
+      })
+      const flattenedChildren = flattenChildren(inspectorTree[0])
+      const targetNode = flattenedChildren.find(child => child.name === query.componentName)
+      devtools.ctx.hooks.callHook('componentHighlight', { uid: targetNode.id })
+      highlightComponentTimeout = setTimeout(() => {
+        devtools.ctx.hooks.callHook('componentUnhighlight')
+      }, 5000)
     },
     // get router info
     async getRouterInfo(query) {

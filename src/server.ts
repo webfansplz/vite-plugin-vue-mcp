@@ -62,6 +62,19 @@ export function createMcpServerDefault(
   )
 
   server.tool(
+    'highlight-component',
+    'Highlight the Vue component.',
+    {
+      componentName: z.string(),
+    },
+    async ({ componentName }) => {
+      return new Promise(() => {
+        ctx.rpcServer.highlightComponent({ componentName })
+      })
+    },
+  )
+
+  server.tool(
     'get-router-info',
     'Get the Vue router info in JSON structure format.',
     {
