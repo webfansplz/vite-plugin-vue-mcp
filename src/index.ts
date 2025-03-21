@@ -62,7 +62,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       const port = vite.config.server.port || 5173
       const root = searchForWorkspaceRoot(vite.config.root)
 
-      const sseUrl = `http://${options.host || 'localhost'}:${options.port || port}${mcpPath}/sse`
+      const sseUrl = `http://${options.host || 'localhost'}:${port}${mcpPath}/sse`
 
       if (cursorMcpOptions.enabled) {
         if (existsSync(join(root, '.cursor'))) {

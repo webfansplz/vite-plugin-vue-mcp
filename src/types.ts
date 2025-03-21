@@ -34,11 +34,6 @@ export interface VueMcpOptions {
   host?: string
 
   /**
-   * The port to listen on, default is the port of the Vite dev server
-   */
-  port?: number
-
-  /**
    * Print the MCP server URL in the console
    *
    * @default true
