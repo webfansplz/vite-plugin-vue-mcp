@@ -27,5 +27,9 @@ export function createServerRpc(ctx: VueMcpContext): RpcFunctions {
     onPiniaInfoUpdated: (event: string, data: string) => {
       ctx.hooks.callHook(event, data)
     },
+    // edit component state
+    editComponentState: (options: { componentName: string, path: string[], value: string, valueType: string }) => {},
+    // highlight component
+    highlightComponent: (options: { componentName: string }) => {},
   }
 }
