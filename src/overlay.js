@@ -3,7 +3,9 @@ import { devtools, devtoolsRouterInfo, devtoolsState, getInspector, stringify, t
 import { createRPCClient } from 'vite-dev-rpc'
 import { createHotContext } from 'vite-hot-client'
 
-const hot = createHotContext()
+
+let base = import.meta.env.BASE_URL || '/'
+const hot = createHotContext('',base)
 const PINIA_INSPECTOR_ID = 'pinia'
 const COMPONENTS_INSPECTOR_ID = 'components'
 
