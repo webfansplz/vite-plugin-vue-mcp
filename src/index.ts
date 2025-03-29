@@ -26,7 +26,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     mcpServer = (vite: ViteDevServer, ctx: VueMcpContext) => import('./server').then(m => m.createMcpServerDefault(options, vite, ctx)),
   } = options
 
-  const cursorMcpOptions = typeof updateCursorMcpJson == 'boolean'
+  const cursorMcpOptions = typeof updateCursorMcpJson === 'boolean'
     ? { enabled: updateCursorMcpJson }
     : updateCursorMcpJson
 
@@ -44,7 +44,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     async configureServer(vite) {
       const rpc = createServerRpc(ctx)
 
-      const rpcServer = createRPCServer<RpcFunctions, any>(
+      const rpcServer = createRPCServer<RpcFunctions, RpcFunctions>(
         'vite-plugin-vue-mcp',
         vite.ws,
         rpc,
@@ -86,7 +86,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       if (importee === vueMcpOptionsImportee) {
         return resolvedVueMcpOptions
       }
-      else if (importee.startsWith('virtual:vue-mcp-path:')) {
+      if (importee.startsWith('virtual:vue-mcp-path:')) {
         const resolved = importee.replace('virtual:vue-mcp-path:', `${vueMcpPath}/`)
         return `${resolved}${vueMcpResourceSymbol}`
       }
@@ -105,7 +105,8 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
         && (
           (typeof appendTo === 'string' && filename.endsWith(appendTo))
           || (appendTo instanceof RegExp && appendTo.test(filename)))) {
-        code = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
+        const modifiedCode = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
+        return modifiedCode
       }
 
       return code

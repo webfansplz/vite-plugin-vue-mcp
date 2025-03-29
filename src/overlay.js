@@ -22,7 +22,8 @@ function flattenChildren(node) {
     result.push(node)
 
     if (Array.isArray(node.children)) {
-      node.children.forEach(child => traverse(child))
+      for (const child of node.children)
+        traverse(child)
     }
   }
 
