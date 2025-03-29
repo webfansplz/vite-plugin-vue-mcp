@@ -4,7 +4,7 @@ import { createRPCClient } from 'vite-dev-rpc'
 import { createHotContext } from 'vite-hot-client'
 
 
-let base = import.meta.env.BASE_URL || '/'
+const base = import.meta.env.BASE_URL || '/'
 const hot = createHotContext('',base)
 const PINIA_INSPECTOR_ID = 'pinia'
 const COMPONENTS_INSPECTOR_ID = 'components'
