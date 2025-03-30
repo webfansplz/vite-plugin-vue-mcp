@@ -54,7 +54,7 @@ export interface VueMcpOptions {
    * Setup the MCP server, this is called when the MCP server is created
    * You may also return a new MCP server to replace the default one
    */
-  mcpServerSetup?: (server: McpServer, viteServer: ViteDevServer) => Awaitable<void | McpServer>
+  mcpServerSetup?: (server: McpServer, viteServer: ViteDevServer) => Awaitable<undefined | McpServer>
 
   /**
    * The path to the MCP server, default is `/__mcp`
