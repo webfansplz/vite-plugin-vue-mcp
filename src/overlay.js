@@ -8,10 +8,43 @@ const base = import.meta.env.BASE_URL || '/'
 const hot = createHotContext('',base)
 const PINIA_INSPECTOR_ID = 'pinia'
 const COMPONENTS_INSPECTOR_ID = 'components'
-
-devtools.init()
-
+const BOOLEAN_VALUES_TRUE = 'true'
 let highlightComponentTimeout = null
+
+// Type conversion utilities
+const typeConverters = {
+  number: value => Number(value),
+  boolean: value => value === BOOLEAN_VALUES_TRUE,
+  object: (value) => {
+    try {
+      return JSON.parse(value)
+    }
+    catch (e) {
+      console.warn('[MCP] Failed to parse object:', e)
+      return value
+    }
+  },
+  array: (value) => {
+    try {
+      return JSON.parse(value)
+    }
+    catch (e) {
+      console.warn('[MCP] Failed to parse array:', e)
+      return value
+    }
+  },
+  string: value => String(value),
+}
+
+// Utility functions
+function convertValue(value, type) {
+  const converter = typeConverters[type]
+  if (!converter) {
+    console.warn(`[MCP] Unknown type: ${type}, returning original value`)
+    return value
+  }
+  return converter(value)
+}
 
 function flattenChildren(node) {
   const result = []
@@ -30,24 +63,44 @@ function flattenChildren(node) {
   return result
 }
 
+// Helper function to get component tree
+async function getComponentTree() {
+  return await devtools.api.getInspectorTree({
+    inspectorId: COMPONENTS_INSPECTOR_ID,
+    filter: '',
+  })
+}
+
+// Helper function to handle Pinia performance mode
+async function withPiniaPerf(callback) {
+  const highPerfModeEnabled = devtoolsState.highPerfModeEnabled
+  if (highPerfModeEnabled) {
+    toggleHighPerfMode(false)
+  }
+  try {
+    return await callback()
+  }
+  finally {
+    if (highPerfModeEnabled) {
+      toggleHighPerfMode(true)
+    }
+  }
+}
+
+devtools.init()
+
 const rpc = createRPCClient(
   'vite-plugin-vue-mcp',
   hot,
   {
     // get component tree
     async getInspectorTree(query) {
-      const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: COMPONENTS_INSPECTOR_ID,
-        filter: '',
-      })
+      const inspectorTree = await getComponentTree()
       rpc.onInspectorTreeUpdated(query.event, inspectorTree[0])
     },
-    // get component state
+
     async getInspectorState(query) {
-      const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: COMPONENTS_INSPECTOR_ID,
-        filter: '',
-      })
+      const inspectorTree = await getComponentTree()
       const flattenedChildren = flattenChildren(inspectorTree[0])
       const targetNode = flattenedChildren.find(child => child.name === query.componentName)
       const inspectorState = await devtools.api.getInspectorState({
@@ -57,12 +110,8 @@ const rpc = createRPCClient(
       rpc.onInspectorStateUpdated(query.event, stringify(inspectorState))
     },
 
-    // edit component state
     async editComponentState(query) {
-      const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: COMPONENTS_INSPECTOR_ID,
-        filter: '',
-      })
+      const inspectorTree = await getComponentTree()
       const flattenedChildren = flattenChildren(inspectorTree[0])
       const targetNode = flattenedChildren.find(child => child.name === query.componentName)
       const payload = {
@@ -73,20 +122,18 @@ const rpc = createRPCClient(
           new: null,
           remove: false,
           type: query.valueType,
-          value: query.value,
+          value: convertValue(query.value, query.valueType),
         },
         type: undefined,
       }
+
+      console.warn('[MCP] Edit state payload:', payload)
       await devtools.ctx.api.editInspectorState(payload)
     },
 
-    // highlight component
     async highlightComponent(query) {
       clearTimeout(highlightComponentTimeout)
-      const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: COMPONENTS_INSPECTOR_ID,
-        filter: '',
-      })
+      const inspectorTree = await getComponentTree()
       const flattenedChildren = flattenChildren(inspectorTree[0])
       const targetNode = flattenedChildren.find(child => child.name === query.componentName)
       devtools.ctx.hooks.callHook('componentHighlight', { uid: targetNode.id })
@@ -94,44 +141,37 @@ const rpc = createRPCClient(
         devtools.ctx.hooks.callHook('componentUnhighlight')
       }, 5000)
     },
-    // get router info
+
+    // Router operations
     async getRouterInfo(query) {
       rpc.onRouterInfoUpdated(query.event, JSON.stringify(devtoolsRouterInfo, null, 2))
     },
-    // get pinia tree
+
+    // Pinia operations
     async getPiniaTree(query) {
-      const highPerfModeEnabled = devtoolsState.highPerfModeEnabled
-      if (highPerfModeEnabled) {
-        toggleHighPerfMode(false)
-      }
-      const inspectorTree = await devtools.api.getInspectorTree({
-        inspectorId: PINIA_INSPECTOR_ID,
-        filter: '',
+      const inspectorTree = await withPiniaPerf(async () => {
+        return await devtools.api.getInspectorTree({
+          inspectorId: PINIA_INSPECTOR_ID,
+          filter: '',
+        })
       })
-      if (highPerfModeEnabled) {
-        toggleHighPerfMode(true)
-      }
       rpc.onPiniaTreeUpdated(query.event, inspectorTree)
     },
-    // get pinia state
+
     async getPiniaState(query) {
-      const highPerfModeEnabled = devtoolsState.highPerfModeEnabled
-      if (highPerfModeEnabled) {
-        toggleHighPerfMode(false)
-      }
-      const payload = {
-        inspectorId: PINIA_INSPECTOR_ID,
-        nodeId: query.storeName,
-      }
-      const inspector = getInspector(payload.inspectorId)
+      const res = await withPiniaPerf(async () => {
+        const payload = {
+          inspectorId: PINIA_INSPECTOR_ID,
+          nodeId: query.storeName,
+        }
+        const inspector = getInspector(payload.inspectorId)
 
-      if (inspector)
-        inspector.selectedNodeId = payload.nodeId
+        if (inspector) {
+          inspector.selectedNodeId = payload.nodeId
+        }
 
-      const res = await devtools.ctx.api.getInspectorState(payload)
-      if (highPerfModeEnabled) {
-        toggleHighPerfMode(true)
-      }
+        return await devtools.ctx.api.getInspectorState(payload)
+      })
       rpc.onPiniaInfoUpdated(query.event, stringify(res))
     },
   },
