@@ -43,9 +43,10 @@ export function createMcpServerDefault(
     'get-component-state',
     'Get the Vue component state in JSON structure format.',
     {
+      componentId: z.string(),
       componentName: z.string(),
     },
-    async ({ componentName }) => {
+    async ({ componentId, componentName }) => {
       return new Promise((resolve) => {
         const eventName = nanoid()
         ctx.hooks.hookOnce(eventName, (res) => {
@@ -56,7 +57,7 @@ export function createMcpServerDefault(
             }],
           })
         })
-        ctx.rpcServer.getInspectorState({ event: eventName, componentName })
+        ctx.rpcServer.getInspectorState({ event: eventName, componentId, componentName })
       })
     },
   )
@@ -65,14 +66,15 @@ export function createMcpServerDefault(
     'edit-component-state',
     'Edit the Vue component state.',
     {
+      componentId: z.string(),
       componentName: z.string(),
       path: z.array(z.string()),
       value: z.string(),
       valueType: z.enum(['string', 'number', 'boolean', 'object', 'array']),
     },
-    async ({ componentName, path, value, valueType }) => {
+    async ({ componentId, componentName, path, value, valueType }) => {
       return new Promise((resolve) => {
-        ctx.rpcServer.editComponentState({ componentName, path, value, valueType })
+        ctx.rpcServer.editComponentState({ componentId, componentName, path, value, valueType })
         resolve({
           content: [{
             type: 'text',
@@ -87,11 +89,12 @@ export function createMcpServerDefault(
     'highlight-component',
     'Highlight the Vue component.',
     {
+      componentId: z.string(),
       componentName: z.string(),
     },
-    async ({ componentName }) => {
+    async ({ componentId, componentName }) => {
       return new Promise((resolve) => {
-        ctx.rpcServer.highlightComponent({ componentName })
+        ctx.rpcServer.highlightComponent({ componentId, componentName })
         resolve({
           content: [{
             type: 'text',

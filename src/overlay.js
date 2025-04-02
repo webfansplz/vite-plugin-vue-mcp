@@ -49,7 +49,7 @@ const rpc = createRPCClient(
         filter: '',
       })
       const flattenedChildren = flattenChildren(inspectorTree[0])
-      const targetNode = flattenedChildren.find(child => child.name === query.componentName)
+      const targetNode = flattenedChildren.find(child => child.id === query.componentId)
       const inspectorState = await devtools.api.getInspectorState({
         inspectorId: COMPONENTS_INSPECTOR_ID,
         nodeId: targetNode.id,
@@ -64,7 +64,7 @@ const rpc = createRPCClient(
         filter: '',
       })
       const flattenedChildren = flattenChildren(inspectorTree[0])
-      const targetNode = flattenedChildren.find(child => child.name === query.componentName)
+      const targetNode = flattenedChildren.find(child => child.id === query.componentId)
       const payload = {
         inspectorId: COMPONENTS_INSPECTOR_ID,
         nodeId: targetNode.id,
@@ -88,7 +88,7 @@ const rpc = createRPCClient(
         filter: '',
       })
       const flattenedChildren = flattenChildren(inspectorTree[0])
-      const targetNode = flattenedChildren.find(child => child.name === query.componentName)
+      const targetNode = flattenedChildren.find(child => child.id === query.componentId)
       devtools.ctx.hooks.callHook('componentHighlight', { uid: targetNode.id })
       highlightComponentTimeout = setTimeout(() => {
         devtools.ctx.hooks.callHook('componentUnhighlight')

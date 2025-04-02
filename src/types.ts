@@ -9,10 +9,10 @@ export interface RpcFunctions {
   // components
   getInspectorTree: (options: { event: string, componentName?: string }) => void
   onInspectorTreeUpdated: (event: string, data: string) => void
-  getInspectorState: (options: { event: string, componentName: string }) => void
+  getInspectorState: (options: { event: string, componentId: string, componentName: string }) => void
   onInspectorStateUpdated: (event: string, data: string) => void
-  editComponentState: (options: { componentName: string, path: string[], value: string, valueType: string }) => void
-  highlightComponent: (options: { componentName: string }) => void
+  editComponentState: (options: { componentName: string, componentId: string, path: string[], value: string, valueType: string }) => void
+  highlightComponent: (options: { componentName: string, componentId: string }) => void
   // router
   getRouterInfo: (options: { event: string }) => void
   onRouterInfoUpdated: (event: string, data: string) => void
