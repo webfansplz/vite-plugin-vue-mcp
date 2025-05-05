@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/webfansplz-vite-plugin-vue-mcp-badge.png)](https://mseep.ai/app/webfansplz-vite-plugin-vue-mcp)
+
 # vite-plugin-vue-mcp
 
 [![npm version][npm-version-src]][npm-version-href]
