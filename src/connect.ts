@@ -1,21 +1,39 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ViteDevServer } from 'vite'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js'
-import DEBUG from 'debug'
 
-const debug = DEBUG('vite:mcp:server')
+// eslint-disable-next-line no-console
+const log = (...args: any[]): void => console.log(...args)
 
-export async function setupRoutes(base: string, server: McpServer, vite: ViteDevServer): Promise<void> {
+export async function setupRoutes(
+  base: string,
+  createServer: () => Promise<McpServer>,
+  vite: ViteDevServer,
+): Promise<void> {
   const transports = new Map<string, SSEServerTransport>()
 
   vite.middlewares.use(`${base}/sse`, async (req, res) => {
-    const transport = new SSEServerTransport(`${base}/messages`, res)
-    transports.set(transport.sessionId, transport)
-    debug('SSE Connected %s', transport.sessionId)
-    res.on('close', () => {
-      transports.delete(transport.sessionId)
-    })
-    await server.connect(transport)
+    try {
+      const transport = new SSEServerTransport(`${base}/messages`, res)
+      const server = await createServer()
+      transports.set(transport.sessionId, transport)
+      log(`[vue-mcp] SSE client connected: ${transport.sessionId}`)
+      res.on('close', () => {
+        log(`[vue-mcp] SSE client disconnected: ${transport.sessionId}`)
+        transports.delete(transport.sessionId)
+        server.close().catch((e: unknown) => {
+          console.error('[vue-mcp] Error closing MCP server:', e)
+        })
+      })
+      await server.connect(transport)
+    }
+    catch (e) {
+      console.error('[vue-mcp] SSE connection error:', e)
+      if (!res.headersSent) {
+        res.statusCode = 500
+        res.end('Internal Server Error')
+      }
+    }
   })
 
   vite.middlewares.use(`${base}/messages`, async (req, res) => {
@@ -36,12 +54,22 @@ export async function setupRoutes(base: string, server: McpServer, vite: ViteDev
 
     const transport = transports.get(clientId)
     if (!transport) {
+      console.warn(`[vue-mcp] Message for unknown session: ${clientId}`)
       res.statusCode = 404
       res.end('Not Found')
       return
     }
 
-    debug('Message from %s', clientId)
-    await transport.handlePostMessage(req, res)
+    try {
+      log(`[vue-mcp] Message received from session: ${clientId}`)
+      await transport.handlePostMessage(req, res)
+    }
+    catch (e) {
+      console.error(`[vue-mcp] Message handling error for session ${clientId}:`, e)
+      if (!res.headersSent) {
+        res.statusCode = 500
+        res.end('Internal Server Error')
+      }
+    }
   })
 }

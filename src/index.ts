@@ -1,3 +1,4 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import type { RpcFunctions, VueMcpContext, VueMcpOptions } from './types'
 import { existsSync } from 'node:fs'
@@ -55,9 +56,12 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       ctx.rpcServer = rpcServer
       ctx.rpc = rpc
 
-      let mcp = await mcpServer(vite, ctx)
-      mcp = await options.mcpServerSetup?.(mcp, vite) || mcp
-      await setupRoutes(mcpPath, mcp, vite)
+      const createMcpServer = async (): Promise<McpServer> => {
+        let mcp = await mcpServer(vite, ctx)
+        mcp = await options.mcpServerSetup?.(mcp, vite) || mcp
+        return mcp
+      }
+      await setupRoutes(mcpPath, createMcpServer, vite)
 
       const port = vite.config.server.port || 5173
       const root = searchForWorkspaceRoot(vite.config.root)
@@ -65,13 +69,25 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
       const sseUrl = `http://${options.host || 'localhost'}:${port}${mcpPath}/sse`
 
       if (cursorMcpOptions.enabled) {
-        if (existsSync(join(root, '.cursor'))) {
-          const mcp = existsSync(join(root, '.cursor/mcp.json'))
-            ? JSON.parse(await fs.readFile(join(root, '.cursor/mcp.json'), 'utf-8') || '{}')
-            : {}
-          mcp.mcpServers ||= {}
-          mcp.mcpServers[cursorMcpOptions.serverName || 'vue-mcp'] = { url: sseUrl }
-          await fs.writeFile(join(root, '.cursor/mcp.json'), `${JSON.stringify(mcp, null, 2)}\n`)
+        try {
+          if (existsSync(join(root, '.cursor'))) {
+            const mcpConfigPath = join(root, '.cursor/mcp.json')
+            let mcp = {}
+            if (existsSync(mcpConfigPath)) {
+              const raw = await fs.readFile(mcpConfigPath, 'utf-8')
+              mcp = JSON.parse(raw || '{}')
+            }
+            // @ts-expect-error dynamic
+            mcp.mcpServers ||= {}
+            // @ts-expect-error dynamic
+            mcp.mcpServers[cursorMcpOptions.serverName || 'vue-mcp'] = { url: sseUrl }
+            await fs.writeFile(mcpConfigPath, `${JSON.stringify(mcp, null, 2)}\n`)
+            // eslint-disable-next-line no-console
+            console.log(`[vue-mcp] Updated ${mcpConfigPath}`)
+          }
+        }
+        catch (e) {
+          console.error('[vue-mcp] Failed to update .cursor/mcp.json:', e)
         }
       }
 

@@ -5,9 +5,49 @@ import { nanoid } from 'nanoid'
 import { z } from 'zod'
 import { version } from '../package.json'
 
+const TOOL_TIMEOUT = 10_000
+
+// eslint-disable-next-line no-console
+const log = (...args: any[]): void => console.log(...args)
+
+function createToolHandler(
+  ctx: VueMcpContext,
+  toolName: string,
+  rpcCall: (eventName: string) => void,
+) {
+  return () => {
+    log(`[vue-mcp] tool:${toolName} called`)
+    return new Promise<{ content: { type: 'text', text: string }[] }>((resolve, reject) => {
+      const eventName = nanoid()
+
+      const timeout = setTimeout(() => {
+        console.error(`[vue-mcp] tool:${toolName} timed out after ${TOOL_TIMEOUT}ms — is a browser tab open?`)
+        reject(new Error(`[vue-mcp] tool:${toolName} timed out — no response from browser client`))
+      }, TOOL_TIMEOUT)
+
+      ctx.hooks.hookOnce(eventName, (res) => {
+        clearTimeout(timeout)
+        log(`[vue-mcp] tool:${toolName} received response`)
+        resolve({
+          content: [{ type: 'text', text: JSON.stringify(res) }],
+        })
+      })
+
+      try {
+        rpcCall(eventName)
+      }
+      catch (e) {
+        clearTimeout(timeout)
+        console.error(`[vue-mcp] tool:${toolName} RPC call failed:`, e)
+        reject(e)
+      }
+    })
+  }
+}
+
 export function createMcpServerDefault(
   options: VueMcpOptions,
-  vite: ViteDevServer,
+  _vite: ViteDevServer,
   ctx: VueMcpContext,
 ): McpServer {
   const server = new McpServer(
@@ -21,22 +61,10 @@ export function createMcpServerDefault(
   server.tool(
     'get-component-tree',
     'Get the Vue component tree in markdown tree syntax format.',
-    {
-    },
-    async () => {
-      return new Promise((resolve) => {
-        const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
-          resolve({
-            content: [{
-              type: 'text',
-              text: JSON.stringify(res),
-            }],
-          })
-        })
-        ctx.rpcServer.getInspectorTree({ event: eventName })
-      })
-    },
+    {},
+    createToolHandler(ctx, 'get-component-tree', (event) => {
+      ctx.rpcServer.getInspectorTree({ event })
+    }),
   )
 
   server.tool(
@@ -46,17 +74,31 @@ export function createMcpServerDefault(
       componentName: z.string(),
     },
     async ({ componentName }) => {
-      return new Promise((resolve) => {
+      log(`[vue-mcp] tool:get-component-state called for "${componentName}"`)
+      return new Promise((resolve, reject) => {
         const eventName = nanoid()
+
+        const timeout = setTimeout(() => {
+          console.error(`[vue-mcp] tool:get-component-state timed out after ${TOOL_TIMEOUT}ms`)
+          reject(new Error(`[vue-mcp] tool:get-component-state timed out — no response from browser client`))
+        }, TOOL_TIMEOUT)
+
         ctx.hooks.hookOnce(eventName, (res) => {
+          clearTimeout(timeout)
+          log(`[vue-mcp] tool:get-component-state received response`)
           resolve({
-            content: [{
-              type: 'text',
-              text: JSON.stringify(res),
-            }],
+            content: [{ type: 'text', text: JSON.stringify(res) }],
           })
         })
-        ctx.rpcServer.getInspectorState({ event: eventName, componentName })
+
+        try {
+          ctx.rpcServer.getInspectorState({ event: eventName, componentName })
+        }
+        catch (e) {
+          clearTimeout(timeout)
+          console.error(`[vue-mcp] tool:get-component-state RPC call failed:`, e)
+          reject(e)
+        }
       })
     },
   )
@@ -71,15 +113,18 @@ export function createMcpServerDefault(
       valueType: z.enum(['string', 'number', 'boolean', 'object', 'array']),
     },
     async ({ componentName, path, value, valueType }) => {
-      return new Promise((resolve) => {
+      log(`[vue-mcp] tool:edit-component-state called for "${componentName}" path=${path.join('.')}`)
+      try {
         ctx.rpcServer.editComponentState({ componentName, path, value, valueType })
-        resolve({
-          content: [{
-            type: 'text',
-            text: 'ok',
-          }],
-        })
-      })
+        log(`[vue-mcp] tool:edit-component-state completed`)
+        return {
+          content: [{ type: 'text', text: 'ok' }],
+        }
+      }
+      catch (e) {
+        console.error(`[vue-mcp] tool:edit-component-state failed:`, e)
+        throw e
+      }
     },
   )
 
@@ -90,37 +135,28 @@ export function createMcpServerDefault(
       componentName: z.string(),
     },
     async ({ componentName }) => {
-      return new Promise((resolve) => {
+      log(`[vue-mcp] tool:highlight-component called for "${componentName}"`)
+      try {
         ctx.rpcServer.highlightComponent({ componentName })
-        resolve({
-          content: [{
-            type: 'text',
-            text: 'ok',
-          }],
-        })
-      })
+        log(`[vue-mcp] tool:highlight-component completed`)
+        return {
+          content: [{ type: 'text', text: 'ok' }],
+        }
+      }
+      catch (e) {
+        console.error(`[vue-mcp] tool:highlight-component failed:`, e)
+        throw e
+      }
     },
   )
 
   server.tool(
     'get-router-info',
     'Get the Vue router info in JSON structure format.',
-    {
-    },
-    async () => {
-      return new Promise((resolve) => {
-        const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
-          resolve({
-            content: [{
-              type: 'text',
-              text: JSON.stringify(res),
-            }],
-          })
-        })
-        ctx.rpcServer.getRouterInfo({ event: eventName })
-      })
-    },
+    {},
+    createToolHandler(ctx, 'get-router-info', (event) => {
+      ctx.rpcServer.getRouterInfo({ event })
+    }),
   )
 
   server.tool(
@@ -130,17 +166,31 @@ export function createMcpServerDefault(
       storeName: z.string(),
     },
     async ({ storeName }) => {
-      return new Promise((resolve) => {
+      log(`[vue-mcp] tool:get-pinia-state called for store "${storeName}"`)
+      return new Promise((resolve, reject) => {
         const eventName = nanoid()
+
+        const timeout = setTimeout(() => {
+          console.error(`[vue-mcp] tool:get-pinia-state timed out after ${TOOL_TIMEOUT}ms`)
+          reject(new Error(`[vue-mcp] tool:get-pinia-state timed out — no response from browser client`))
+        }, TOOL_TIMEOUT)
+
         ctx.hooks.hookOnce(eventName, (res) => {
+          clearTimeout(timeout)
+          log(`[vue-mcp] tool:get-pinia-state received response`)
           resolve({
-            content: [{
-              type: 'text',
-              text: JSON.stringify(res),
-            }],
+            content: [{ type: 'text', text: JSON.stringify(res) }],
           })
         })
-        ctx.rpcServer.getPiniaState({ event: eventName, storeName })
+
+        try {
+          ctx.rpcServer.getPiniaState({ event: eventName, storeName })
+        }
+        catch (e) {
+          clearTimeout(timeout)
+          console.error(`[vue-mcp] tool:get-pinia-state RPC call failed:`, e)
+          reject(e)
+        }
       })
     },
   )
@@ -148,22 +198,10 @@ export function createMcpServerDefault(
   server.tool(
     'get-pinia-tree',
     'Get the Pinia tree in JSON structure format.',
-    {
-    },
-    async () => {
-      return new Promise((resolve) => {
-        const eventName = nanoid()
-        ctx.hooks.hookOnce(eventName, (res) => {
-          resolve({
-            content: [{
-              type: 'text',
-              text: JSON.stringify(res),
-            }],
-          })
-        })
-        ctx.rpcServer.getPiniaTree({ event: eventName })
-      })
-    },
+    {},
+    createToolHandler(ctx, 'get-pinia-tree', (event) => {
+      ctx.rpcServer.getPiniaTree({ event })
+    }),
   )
 
   return server
