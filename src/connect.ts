@@ -14,6 +14,7 @@ export async function setupRoutes(base: string, server: McpServer, vite: ViteDev
     debug('SSE Connected %s', transport.sessionId)
     res.on('close', () => {
       transports.delete(transport.sessionId)
+      server.close().catch(() => {})
     })
     await server.connect(transport)
   })

@@ -31,6 +31,7 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     : updateCursorMcpJson
 
   let config: ResolvedConfig
+  let isNuxt = false
   const vueMcpPath = getVueMcpPath()
   const vueMcpOptionsImportee = 'virtual:vue-mcp-options'
   const resolvedVueMcpOptions = `\0${vueMcpOptionsImportee}`
@@ -93,6 +94,8 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
     },
     configResolved(resolvedConfig) {
       config = resolvedConfig
+      // Nuxt does not run transformIndexHtml, detect it so we can inject via transform instead
+      isNuxt = resolvedConfig.plugins.some(p => p.name?.startsWith('nuxt:'))
     },
     transform(code, id, _options) {
       if (_options?.ssr)
@@ -106,6 +109,11 @@ export function VueMcp(options: VueMcpOptions = {}): Plugin {
           (typeof appendTo === 'string' && filename.endsWith(appendTo))
           || (appendTo instanceof RegExp && appendTo.test(filename)))) {
         code = `import 'virtual:vue-mcp-path:overlay.js';\n${code}`
+      }
+
+      // Auto-inject for Nuxt: transformIndexHtml is not called in Nuxt, target its app entry instead
+      if (!options.appendTo && isNuxt && filename.includes('nuxt/dist/app/entry')) {
+        code = \`import 'virtual:vue-mcp-path:overlay.js';\n\${code}\`
       }
 
       return code
